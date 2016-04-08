@@ -5,36 +5,33 @@ fs = require('fs');
 
 
 var path = 'Liste_PPN-ExNr_HSHN-libre.csv';
-
+var dataSet = [];
 
 fs.readFile(path, 'utf8', function (err,data) {
     if (err) {
         return console.log(err);
     }
     var lines = data.split('\n');
-    var dataSet = [];
 
     for (var i = 0; i < lines.length; i++) {
-        var id = lines[i].split(',')[0];
-        if (id.length > 3) {
-            dataSet.push({
-                id: checkPPN(lines[i].split(',')[0]),
-                line: i
-            });
-        }
+        dataSet.push({
+            ppn: getPPN(lines[i]),
+            recordNr: getRecordNr(lines[i]),
+            signature: '',
+            barcode: '',
+            seal: ''
+        });
     }
 
-    console.log(lines.length);
     console.log(dataSet);
 });
 
-
-var checkPPN = function(ppn) {
-    if (ppn === undefined || ppn === null) {
+var getPPN = function(line) {
+    if (line === undefined || line === null) {
         return 
     }
 
-    ppn = ppn.toString();
+    var ppn = line.split(',')[0].toString();
     if (ppn.length !== 9 && ppn.length < 9) {
         var l = 9 - ppn.length;
         var fill = '';
@@ -46,4 +43,15 @@ var checkPPN = function(ppn) {
     }
 
     return ppn;
+};
+
+var getRecordNr = function(line) {
+    if (line === undefined || line === null) {
+        return
+    }
+
+    var prefix = line.split(',')[0];
+    line = line.replace(prefix + ',', '');
+
+    return line.split(' ')[0];
 };
