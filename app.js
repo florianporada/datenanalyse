@@ -15,18 +15,18 @@ fs.readFile(path, 'utf8', function (err,data) {
 
     for (var i = 0; i < lines.length; i++) {
         dataSet.push({
-            ppn: getPPN(lines[i]),
-            recordNr: getRecordNr(lines[i]),
-            signature: '',
-            barcode: '',
-            seal: ''
+            ppn: parsePPN(lines[i]),
+            recordNr: parseRecordNr(lines[i]),
+            signature: parseSignature(lines[i]),
+            barcode: parseBarcode(lines[i]),
+            seal: parseSeal(lines[i])
         });
     }
 
     console.log(dataSet);
 });
 
-var getPPN = function(line) {
+var parsePPN = function(line) {
     if (line === undefined || line === null) {
         return 
     }
@@ -45,13 +45,41 @@ var getPPN = function(line) {
     return ppn;
 };
 
-var getRecordNr = function(line) {
+var parseRecordNr = function(line) {
     if (line === undefined || line === null) {
         return
     }
 
-    var prefix = line.split(',')[0];
-    line = line.replace(prefix + ',', '');
+    //replace PPN with emtpy string
+    line = line.replace(line.split(',')[0] + ',', '');
 
     return line.split(' ')[0];
+};
+
+//TODO: noch failsafe machen.
+var parseSignature = function(line) {
+    if (line === undefined || line === null) {
+        return
+    }
+    
+    //replace PPN + recordNr with emtpy string
+    line = line.replace(line.split(' ')[0] + ' ', '');
+
+    return line.split(',')[0];
+};
+
+var parseBarcode = function(line) {
+    if (line === undefined || line === null) {
+        return
+    }
+
+    return line.split(',')[line.split(',').length - 2];
+};
+
+var parseSeal = function(line) {
+    if (line === undefined || line === null) {
+        return
+    }
+
+    return line.split(',')[line.split(',').length - 1].replace('\r', '');
 };
