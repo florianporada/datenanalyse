@@ -1,0 +1,12 @@
+{
+  "name": "datenanalyse",
+  "version": "1.0.0",
+  "description": "first project for data-analyse",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "florian porada",
+  "license": "MIT"
+}
