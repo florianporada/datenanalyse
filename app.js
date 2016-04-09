@@ -8,7 +8,7 @@ var path = 'Liste_PPN-ExNr_HSHN-libre.csv';
 var path2 = 'test.csv';
 var dataSet = [];
 
-fs.readFile(path, 'utf8', function (err,data) {
+fs.readFile(path2, 'utf8', function (err,data) {
     if (err) {
         return console.log(err);
     }
@@ -25,7 +25,8 @@ fs.readFile(path, 'utf8', function (err,data) {
     }
 
     console.log(dataSet);
-    console.log(getDuplicates(dataSet, 'seal'));
+    console.log(getDuplicates(dataSet, 'ppn'));
+    console.log(getStatistics(dataSet, 'ppn'));
 });
 
 var parsePPN = function(line) {
@@ -87,18 +88,35 @@ var parseSeal = function(line) {
 };
 
 var getDuplicates = function(data, key) {
-    var arr = [];
-    var results = [data[1][key]];
+    var results = [data[0][key]];
 
-    for (var i = 0; i < data.length; i++) {
-        arr.push(data[i][key])
-    }
-
-    for (var j = 0; j < arr.length; j++) {
-        if (results.indexOf(arr[j]) == -1) {
-            results.push(arr[j])
+    for (var j = 0; j < data.length; j++) {
+        if (results.indexOf(data[j][key]) == -1) {
+            results.push(data[j][key])
         }
     }
 
     return results;
+};
+
+var getStatistics = function(data, key) {
+    var compare = getDuplicates(data, key);
+    var result = [];
+
+    for (var i = 0; i < compare.length; i++) {
+        result[compare[i]] = '';
+    }
+
+    for (var j = 0; j < compare.length; j++) {
+        var count = 0;
+        for (var k = 0; k < data.length; k++) {
+            if (data[k][key] == compare[j]) {
+                count++
+            }
+        }
+
+        result[compare[j]] = count;
+    }
+
+    return result;
 };
