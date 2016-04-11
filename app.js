@@ -12,7 +12,7 @@ fs.readFile(path2, 'utf8', function (err,data) {
     if (err) {
         return console.log(err);
     }
-    var lines = data.split('\n');
+    var lines = data.match(/[^\r\n]+/g);
 
     for (var i = 1; i < lines.length; i++) {
         dataSet.push({
@@ -25,13 +25,12 @@ fs.readFile(path2, 'utf8', function (err,data) {
     }
 
     console.log(dataSet);
-    console.log(getDuplicates(dataSet, 'ppn'));
     console.log(getStatistics(dataSet, 'ppn'));
 });
 
 var parsePPN = function(line) {
     if (line === undefined || line === null) {
-        return 
+        return 'missing line';
     }
 
     var ppn = line.split(',')[0].toString();
@@ -53,10 +52,7 @@ var parseRecordNr = function(line) {
         return
     }
 
-    //replace PPN with emtpy string
-    line = line.replace(line.split(',')[0] + ',', '');
-
-    return line.split(' ')[0];
+    return line.split(',')[1];
 };
 
 //TODO: noch failsafe machen.
@@ -64,11 +60,13 @@ var parseSignature = function(line) {
     if (line === undefined || line === null) {
         return
     }
-    
-    //replace PPN + recordNr with emtpy string
-    line = line.replace(line.split(' ')[0], '').trim();
 
-    return line.split(',')[0];
+    var split = line.split(',');
+    
+    line = line.replace(split[0] + ',', '').replace(split[1] + ',', '').replace(split[split.length - 2] + ',', '').replace(split[split.length -1], '');
+    line = line.slice(0, -1);
+
+    return line;
 };
 
 var parseBarcode = function(line) {
@@ -84,7 +82,7 @@ var parseSeal = function(line) {
         return
     }
 
-    return line.split(',')[line.split(',').length - 1].replace('\r', '');
+    return line.split(',')[line.split(',').length - 1];
 };
 
 var getDuplicates = function(data, key) {
@@ -102,6 +100,7 @@ var getDuplicates = function(data, key) {
 var getStatistics = function(data, key) {
     var compare = getDuplicates(data, key);
     var result = [];
+    var sortable = [];
 
     for (var i = 0; i < compare.length; i++) {
         result[compare[i]] = '';
@@ -118,5 +117,11 @@ var getStatistics = function(data, key) {
         result[compare[j]] = count;
     }
 
-    return result;
+    for (var o in result) {
+        sortable[o] = result[o];
+    }
+
+    sortable.sort(function(a, b) {return b[1] - a[1]});
+
+    return sortable;
 };
