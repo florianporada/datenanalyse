@@ -7,8 +7,9 @@ var fs = require('fs');
 var path = 'Liste_PPN-ExNr_HSHN-libre.csv';
 var path2 = 'test.csv';
 var dataSet = [];
+var file = fs.createWriteStream('result.txt');
 
-fs.readFile(path, 'utf8', function (err,data) {
+fs.readFile(path2, 'utf8', function (err,data) {
     if (err) {
         return console.log(err);
     }
@@ -24,8 +25,8 @@ fs.readFile(path, 'utf8', function (err,data) {
         });
     }
 
-    // console.log(dataSet);
-    // console.log(getStatistics(dataSet, 'seal'));
+    // file.write(JSON.stringify(dataSet, 0 , 2));
+    console.log(getDuplicates(dataSet, 'ppn'));
 });
 
 var parsePPN = function(line) {
@@ -55,7 +56,6 @@ var parseRecordNr = function(line) {
     return line.split(',')[1];
 };
 
-//TODO: noch failsafe machen.
 var parseSignature = function(line) {
     if (line === undefined || line === null) {
         return
