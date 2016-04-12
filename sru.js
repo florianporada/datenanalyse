@@ -3,11 +3,12 @@
  */
 var request = require("request");
 var mongoose = require('mongoose');
+var fs = require('fs');
 
 mongoose.connect('mongodb://localhost/SWB');
 
 var Item = mongoose.model('Item', {
-    ppn: Number,
+    ppn: String,
     xml: String
 });
 
@@ -32,4 +33,21 @@ var saveItem = function(item) {
     });
 };
 
-getItemFromSwb(435170503);
+var readJsonFile = function(path, callback) {
+    fs.readFile(path, 'utf8', function (err,data) {
+        if (err) throw err;
+        
+        var obj = JSON.parse(data);
+        
+        if (typeof callback === "function") {
+            callback(obj);
+        }
+    });
+};
+
+
+readJsonFile('result.txt', function(data) {
+    data.forEach(function(item) {
+        getItemFromSwb(item.ppn);
+    })
+});

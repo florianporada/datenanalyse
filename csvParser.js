@@ -3,7 +3,6 @@
  */
 var fs = require('fs');
 
-
 var path = 'Liste_PPN-ExNr_HSHN-libre.csv';
 var path2 = 'test.csv';
 var dataSet = [];
@@ -25,8 +24,8 @@ fs.readFile(path2, 'utf8', function (err,data) {
         });
     }
 
-    // file.write(JSON.stringify(dataSet, 0 , 2));
-    console.log(getDuplicates(dataSet, 'ppn'));
+    file.write(JSON.stringify(getUniques(dataSet, 'ppn'), 0 , 2));
+    // console.log(getDuplicates(dataSet, 'ppn'));
 });
 
 var parsePPN = function(line) {
@@ -85,12 +84,14 @@ var parseSeal = function(line) {
     return line.split(',')[line.split(',').length - 1];
 };
 
-var getDuplicates = function(data, key) {
-    var results = [data[0][key]];
+var getUniques = function(data, key) {
+    var results = [];
 
     for (var j = 0; j < data.length; j++) {
         if (results.indexOf(data[j][key]) == -1) {
-            results.push(data[j][key])
+            var tmp = {};
+            tmp[key] = data[j][key];
+            results.push(tmp);
         }
     }
 
@@ -98,7 +99,7 @@ var getDuplicates = function(data, key) {
 };
 
 var getStatistics = function(data, key) {
-    var compare = getDuplicates(data, key);
+    var compare = getUniques(data, key);
     var result = [];
     var sortable = [];
 
