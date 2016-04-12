@@ -52,8 +52,8 @@ var readJsonFile = function(path, callback) {
 
 readJsonFile('result.txt', function(data) {
     data.forEach(function(item) {
-        swbFetcher(item.ppn, function(data) {
-            saveItem(data.ppn);
+        swbFetcher(item.ppn, function(item) {
+            saveItem(item);
         });
     })
 });
