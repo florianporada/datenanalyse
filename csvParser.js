@@ -24,8 +24,7 @@ fs.readFile(path2, 'utf8', function (err,data) {
         });
     }
 
-    file.write(JSON.stringify(getUniques(dataSet, 'ppn'), 0 , 2));
-    // console.log(getDuplicates(dataSet, 'ppn'));
+    fs.writeFile('uniquePPN.json', JSON.stringify(getUniques(dataSet, 'ppn'), 0 , 2))
 });
 
 var parsePPN = function(line) {
@@ -88,9 +87,10 @@ var getUniques = function(data, key) {
     var results = [];
 
     for (var j = 0; j < data.length; j++) {
-        if (results.indexOf(data[j][key]) == -1) {
+        var value = data[j][key];
+        if (arrayObjectIndexOf(results, value, key) == -1) {
             var tmp = {};
-            tmp[key] = data[j][key];
+            tmp[key] = value;
             results.push(tmp);
         }
     }
@@ -120,3 +120,11 @@ var getStatistics = function(data, key) {
 
     return result;
 };
+
+function arrayObjectIndexOf(myArray, searchTerm, property) {
+    for(var i = 0, len = myArray.length; i < len; i++) {
+        if (myArray[i][property] === searchTerm) return i;
+    }
+
+    return -1;
+}
